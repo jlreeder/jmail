@@ -71,6 +71,7 @@
 /***/ (function(module, exports, __webpack_require__) {
 
 const Router = __webpack_require__(1);
+const Inbox = __webpack_require__(2);
 
 document.addEventListener('DOMContentLoaded', () => {
   const navLinks = document.querySelector('.sidebar-nav');
@@ -84,10 +85,14 @@ document.addEventListener('DOMContentLoaded', () => {
     window.location.hash = newLocation;
   });
 
-  const router = new Router(content);
+  const router = new Router(content, routes);
   router.start();
 
 });
+
+const routes = {
+  inbox: Inbox
+};
 
 
 /***/ }),
@@ -95,8 +100,9 @@ document.addEventListener('DOMContentLoaded', () => {
 /***/ (function(module, exports) {
 
 class Router {
-  constructor (node) {
+  constructor (node, routes) {
     this.node = node;
+    this.routes = routes;
   }
 
   start () {
@@ -109,19 +115,35 @@ class Router {
 
   activeRoute () {
     let hashFragment = window.location.hash.slice(1);
-    return hashFragment;
+    return this.routes[hashFragment];
   }
 
   render () {
     this.node.innerHTML = "";
-    let currentRoute = this.activeRoute();
-    let newP = document.createElement('p');
-    newP.innerHTML = currentRoute;
-    this.node.appendChild(newP);
+    let component = this.activeRoute();
+    if (component) {
+      this.node.appendChild(component.render());
+    }
   }
 }
 
 module.exports = Router;
+
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports) {
+
+const Inbox = {
+  render () {
+    let container = document.createElement("ul");
+    container.className = "messages";
+    container.innerHTML = "An Inbox Message";
+    return container;
+  }
+};
+
+module.exports = Inbox;
 
 
 /***/ })
